@@ -434,7 +434,8 @@ public class HealthKitReader {
         enumerateTo: Date,
         intervalComponents: DateComponents,
         monitorUpdates: Bool = false,
-        enumerationBlock: @escaping StatisticsCompeltionHandler
+        enumerationBlock: @escaping StatisticsCompeltionHandler,
+        completeBlock: (() -> Void)? = nil
     ) throws -> StatisticsCollectionQuery {
         guard let quantityType = type.original as? HKQuantityType else {
             throw HealthKitError.invalidType(
@@ -473,6 +474,7 @@ public class HealthKitReader {
         )
         query.initialResultsHandler = { (_, result, error) in
             resultsHandler(result, error)
+            completeBlock?()
         }
         if monitorUpdates {
             query.statisticsUpdateHandler = { (_, _, result, error) in
